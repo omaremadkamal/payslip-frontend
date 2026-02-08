@@ -17,8 +17,8 @@ const PasswordField = ({
 
   return (
     <div className="w-[440px] max-w-full flex flex-col font-sans">
-      <div className="flex justify-between items-center mb-2">
-        <label className="text-[#1A1C1E] text-[20px] font-bold">
+      <div className="flex justify-between items-center ">
+        <label className="text-[#1A1C1E] text-[14px] font-bold">
           {labelname}
         </label>
         {showResetPassword && (
@@ -34,7 +34,7 @@ const PasswordField = ({
         <input
           type={showPassword ? "text" : "password"}
           placeholder="......."
-          className="w-full h-[48px] h-[48px] top-[14px] right-[17px] bottom-[14px] left-[17px] px-6 pr-14 border border-[#D1D5DB] rounded-[16px]  text-[#6B7280] text-[18px] outline-none box-border focus:border-blue-500 focus:ring-1"
+          className="w-full h-[48px]  top-[14px] right-[17px] bottom-[14px] left-[17px] px-4 pr-14 border border-[#D1D5DB] rounded-[16px]  text-[#6B7280] text-[18px] outline-none box-border focus:border-blue-500 focus:ring-1"
         />
 
         <button
@@ -49,7 +49,11 @@ const PasswordField = ({
           )}
         </button>
       </div>
-      {showError && <p>Must be at least 8 characters.</p>}
+      {showError && (
+        <p className="h-[16px] text-[12px] text-[#6B7280]">
+          Must be at least 8 characters.
+        </p>
+      )}
     </div>
   );
 };

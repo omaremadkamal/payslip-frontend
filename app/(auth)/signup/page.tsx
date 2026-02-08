@@ -34,52 +34,54 @@ export default function Page() {
         </div>
       </form>
 
-      <form className="min-h-screen w-[448px] h-[654px] top-[185px] left-[856px] gap-[18px] w-1/2 justify-center">
-        <div className="w-[440px] h-[39px] p-10 flex flex-col items-start">
-          <h1 className=" w-[448px] h-[36px] leading-[36px] text-[30px] font-bold text-[#1A1C1E] mb-2">
-            Create an account{" "}
-          </h1>
-          <p className="text-[#6B7280] mb-8 w-[448px] h-[24px] font-euclid font-normal text-[16px] leading-[24px] align-middle">
-            Start managing your organization's payroll today.
-          </p>
-          <div>
+      <form className="min-h-screen  top-[185px] left-[856px] gap-[18px] w-1/2 justify-center ">
+        <div className="w-[440px] h-[36px] p-10 flex flex-col items-start">
+          <div className=" w-[440px] h-[68px] gap-8px">
+            <h1 className=" w-[448px] h-[36px] leading-[20px] text-[30px] font-bold text-[#1A1C1E] mb-2">
+              Create an account{" "}
+            </h1>
+            <p className="text-[#6B7280]  w-[448px] h-[24px] font-euclid font-normal text-[16px] leading-[24px] align-middle">
+              Start managing your organization's payroll today.
+            </p>
+          </div>
+          <div className=" w-[440px] h-[74px] gap-4px">
             <GeneralInput
               placeholder="e.g. John Doe"
               type="text"
               labelname="Admin Full Name"
             ></GeneralInput>
           </div>
-          <div className="mt-6">
+          <div className="w-[440px] h-[74px] gap-4px">
             <GeneralInput
               placeholder="please enter your email"
               type="email"
-              labelname="Email Adress"
+              labelname="Work Email"
             ></GeneralInput>
           </div>
-          <div className="mt-6">
+          <div className=" w-[440px] h-[94px] gap-4px">
             <PasswordField
               showResetPassword={false}
               labelname="Password"
               showError={true}
             />
           </div>
-          <div className="mt-6">
+          <div className=" w-[440px] h-[94px] gap-4px">
             <PasswordField
               showResetPassword={false}
               labelname="Confirm Password"
               showError={true}
             />
           </div>
-          <div className="mt-4">
+          <div className="w-[440px] h-[20px] gap-8px">
             <RememberMe text="I agree to the Terms of Service and Privacy Policy" />
           </div>
-          <div className="mt-4">
+          <div className=" h-[94px]">
             <SignInButton text={" Sign Up Now"} />
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col  h-[94px]">
             <SignUpText />
           </div>
-          <div className="mt-4">
+          <div className="">
             <FooterLabels />
           </div>
         </div>

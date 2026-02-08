@@ -9,7 +9,7 @@ const RememberMe = ({ text }: { text: string }) => {
 
       <label
         htmlFor="remember"
-        className="text-[#4B5563] text-[14px] font-medium cursor-pointer"
+        className="text-[#4B5563] text-[14px]  font-medium cursor-pointer"
       >
         {text}
       </label>
