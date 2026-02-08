@@ -7,7 +7,7 @@ export const EmailField = ({ text }: { text: string }) => {
       <input
         type="email"
         placeholder="e.g.name@company.com"
-        className="w-full h-[75px] px-6 border border-[#D1D5DB] rounded-[16px] text-[#6B7280] text-[18px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-sm box-border"
+        className="w-full h-[50px] px-6 border border-[#D1D5DB] rounded-[16px] text-[#6B7280] text-[18px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-sm box-border"
       />
     </div>
   );

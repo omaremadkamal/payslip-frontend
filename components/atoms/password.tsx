@@ -34,7 +34,7 @@ const PasswordField = ({
         <input
           type={showPassword ? "text" : "password"}
           placeholder="......."
-          className="w-full h-[77px] px-6 pr-14 border border-[#D1D5DB] rounded-[16px]  text-[#6B7280] text-[18px] outline-none box-border"
+          className="w-full h-[48px] h-[48px] top-[14px] right-[17px] bottom-[14px] left-[17px] px-6 pr-14 border border-[#D1D5DB] rounded-[16px]  text-[#6B7280] text-[18px] outline-none box-border focus:border-blue-500 focus:ring-1"
         />
 
         <button

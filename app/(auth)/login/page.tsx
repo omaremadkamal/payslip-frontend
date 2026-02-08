@@ -1,4 +1,4 @@
-import EmailField, { InputLabel } from "@/components/atoms/textatom";
+import EmailField from "@/components/atoms/textatom";
 import PasswordField from "@/components/atoms/password";
 import RememberMe from "@/components/atoms/rememberme";
 import SignInButton from "@/components/atoms/button";

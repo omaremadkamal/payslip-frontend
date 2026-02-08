@@ -6,19 +6,19 @@ const FooterLabels = ({ text }: { text?: string }) => {
     <Box>
       <Link
         href="/forgot-password"
-        className="text-sm font-bold text-[#E35E14] hover:underlin pr-[30px]"
+        className="text-sm font-bold text-[#9CA3AF] hover:underlin pr-[30px]"
       >
         Privacy Policy
       </Link>
       <Link
         href="/forgot-password"
-        className="text-sm font-bold text-[#E35E14] hover:underline "
+        className="text-sm font-bold text-[#9CA3AF] hover:underline "
       >
         Terms of Service
       </Link>
       <Link
         href="/forgot-password"
-        className="text-sm font-bold text-[#E35E14] hover:underline pl-[30px]"
+        className="text-sm font-bold text-[#9CA3AF] hover:underline pl-[30px]"
       >
         Help Center
       </Link>

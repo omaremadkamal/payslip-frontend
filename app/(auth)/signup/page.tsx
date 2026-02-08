@@ -34,13 +34,13 @@ export default function Page() {
         </div>
       </form>
 
-      <form className="min-h-screen flex place-items-center w-1/2 justify-center">
-        <div className="gap-25px w-440px h-460px t-220.14px l  p-10 flex flex-col items-start">
-          <h1 className="text-[30px] font-bold text-[#1A1C1E] mb-2">
-            Sign in to your account
+      <form className="min-h-screen w-[448px] h-[654px] top-[185px] left-[856px] gap-[18px] w-1/2 justify-center">
+        <div className="w-[440px] h-[39px] p-10 flex flex-col items-start">
+          <h1 className=" w-[448px] h-[36px] leading-[36px] text-[30px] font-bold text-[#1A1C1E] mb-2">
+            Create an account{" "}
           </h1>
-          <p className="text-[#6B7280] mb-8">
-            Welcome back! Please enter your details.
+          <p className="text-[#6B7280] mb-8 w-[448px] h-[24px] font-euclid font-normal text-[16px] leading-[24px] align-middle">
+            Start managing your organization's payroll today.
           </p>
           <div>
             <GeneralInput
