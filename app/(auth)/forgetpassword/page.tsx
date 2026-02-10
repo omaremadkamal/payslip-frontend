@@ -15,6 +15,7 @@ export default function ForgetPassword() {
         display: "flex",
       }}
     >
+      <header></header>
       <form
         className="flex place-items-center w-1/2 justify-center"
         style={{ width: "480px", height: " 535px", flexDirection: "column" }}
