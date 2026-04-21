@@ -4,6 +4,7 @@ import RememberMe from "@/components/atoms/rememberme";
 import SignInButton from "@/components/atoms/button";
 import SignUpText from "@/components/atoms/signuptext";
 import { GeneralInput } from "@/components/atoms/inputAtom";
+import FooterLabels from "@/components/atoms/footer";
 import Link from "next/link";
 export default function LoginPage() {
   return (
@@ -26,7 +27,9 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-        <div className="text-xs md:text-sm opacity-80">
+
+        <div className="text-xs md:text-sm opacity-80 flex">
+          <img src="./test.svg" alt="arrow" />
           Trusted by 5,000+ businesses
         </div>
       </form>
@@ -58,6 +61,9 @@ export default function LoginPage() {
           </div>
           <div className="flex flex-col gap-4">
             <SignUpText />
+          </div>
+          <div className="flex  items-center justify-center ">
+            <FooterLabels />
           </div>
         </div>
       </form>

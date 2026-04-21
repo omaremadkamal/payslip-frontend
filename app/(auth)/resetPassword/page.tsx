@@ -1,11 +1,12 @@
 import React from "react";
 import PasswordField from "@/components/atoms/password";
 import SignInButton from "@/components/atoms/button";
+import SideNavitem from "@/components/molecules/sideNavItem/sideNavItem";
 export default function resetpasswordpage() {
   return (
     <div className="w-full h-full ">
       <nav>
-        <div className="w-full h-[90px]  pr-[8px] pl-[8px] gap-2 flex items-center border-b border-[#1B262C] h-[1px]">
+        <div className="w-full h-[70px]  pr-[8px] pl-[8px] gap-2 flex items-center border-b border-[#1B262C] h-[1px]">
           <h3 className=" text-[#D85B00] w-[86px] h-[17px]  font-sans font-medium text-[14px] leading-none tracking-normal align-middle">
             Payroll SLips
           </h3>
@@ -19,44 +20,15 @@ export default function resetpasswordpage() {
           </div>
         </div>
       </nav>
-      <div className=" w-[100%] h-[100%] flex">
-        <aside
-          className="w-[60px] pr-[8px] pl-[8px] gap-[5px]
-      flex flex-col items-center border-r border-[#1B262c] "
-        >
-          <div className="w-[44px] h-[44px] p-[10px] ">
-            <img src="/iconstack.io.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px]  ">
-            <img src="/iconstack.1.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px] ">
-            <img src="/iconstack.2.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px]">
-            <img src="/iconstack.io3.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px]">
-            <img src="/iconstack.io4.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px] ">
-            <img src="/iconstack.io5.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px] ">
-            <img src="/iconstack.io6.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px] ">
-            <img src="/building.svg" alt="icons" />
-          </div>
-          <div className="w-[44px] h-[44px] p-[10px] ">
-            <img src="/iconstack.io7.svg" alt="icons" />
-          </div>
-        </aside>
 
-        <div className="flex justify-center w-full mt-[50px] ">
+      <div className=" w-[100%] max-h-full flex">
+        <div className=" border-[#1B262c]">
+          <SideNavitem />
+        </div>
+        <div className="flex justify-center w-full mt-[30px] ">
           <form
             className="w-[480px]   
-             rounded-[12px] bg-[#FFFFFF] border-[#F3F4F6] border-[1px] p-[33px] gap-18px shadow-[0_12px_15px_-10px_rgba(0,0,0,0.1),0_25px_30px_-15px_rgba(0,0,0,0.2)]"
+             rounded-[12px] bg-[#FFFFFF] border-[#F3F4F6] border-[1px]  gap-18px shadow-[0_12px_15px_-10px_rgba(0,0,0,0.1),0_25px_30px_-15px_rgba(0,0,0,0.2)]"
           >
             <div className="w-[414px] h-[30px] flex items-center justify-center">
               <h1 className="font-bold text-[24px] leading-[30px]  text-center ">
@@ -69,7 +41,7 @@ export default function resetpasswordpage() {
                 portal.
               </p>
             </div>
-            <div className=" w-[414px] h-[76px] gap-[18px] mt-[18px]">
+            <div className=" w-[440px] h-[76px] gap-[18px] mt-[18px]">
               <PasswordField
                 showResetPassword={false}
                 labelname="Enter Your Old Password"
@@ -77,7 +49,7 @@ export default function resetpasswordpage() {
               />
             </div>
             <div>
-              <div className=" w-[414px] h-[76px]">
+              <div className=" w-[440px] h-[76px]">
                 <PasswordField
                   showResetPassword={false}
                   labelname="New Password"
@@ -106,7 +78,7 @@ export default function resetpasswordpage() {
                 </p>
               </div>
 
-              <div className=" w-[414px] h-[76px]">
+              <div className=" w-[440px] h-[76px]">
                 <PasswordField
                   showResetPassword={false}
                   labelname="Confirm New Password"
@@ -114,7 +86,7 @@ export default function resetpasswordpage() {
                 />
               </div>
 
-              <div className=" h-[56px] mt-[25px]">
+              <div className=" h-[56px] mt-[10px]">
                 <SignInButton text={"Reset Password"} />
               </div>
               <div

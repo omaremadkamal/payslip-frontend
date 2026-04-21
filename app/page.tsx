@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Button from "@/components/atoms/button";
 
 export default function Home() {
   return (
