@@ -28,8 +28,8 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="text-xs md:text-sm opacity-80 flex">
-          <img src="./test.svg" alt="arrow" />
+        <div className="text-xs md:text-sm opacity-80 flex items-center gap-2">
+          <img src="./test.svg" alt="arrow" className="pr" />
           Trusted by 5,000+ businesses
         </div>
       </form>

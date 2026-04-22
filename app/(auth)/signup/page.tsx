@@ -29,7 +29,8 @@ export default function Page() {
             </p>
           </div>
         </div>
-        <div className="text-xs md:text-sm opacity-80">
+        <div className="text-xs md:text-sm opacity-80 flex items-center gap-2">
+          <img src="./test.svg" alt="arrow" className="pr" />
           Trusted by 5,000+ growing businesses.
         </div>
       </form>
