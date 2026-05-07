@@ -32,7 +32,7 @@ export default function ForgetPassword() {
           }}
         >
           <img
-            src="./icon.svg"
+            src="./icon 1.svg"
             alt="icon"
             style={{
               background: "white",
