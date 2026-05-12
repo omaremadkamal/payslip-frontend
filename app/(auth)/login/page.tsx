@@ -1,72 +1,121 @@
-import EmailField from "@/components/atoms/textatom";
-import PasswordField from "@/components/atoms/password";
-import RememberMe from "@/components/atoms/rememberme";
-import SignInButton from "@/components/atoms/button";
-import SignUpText from "@/components/atoms/signuptext";
-import { GeneralInput } from "@/components/atoms/inputAtom";
-import FooterLabels from "@/components/atoms/footer";
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { Button } from "@/components/auth/button";
+import { CheckboxField } from "@/components/auth/checkbox-field";
+import { FooterLinks } from "@/components/auth/footer-links";
+import { LoadingScreen } from "@/components/auth/loading-screen";
+import { PasswordField } from "@/components/auth/password-field";
+import { TextField } from "@/components/auth/text-field";
+import { useAuth } from "@/components/providers/auth-provider";
+import { ROUTES } from "@/lib/routes";
+
 export default function LoginPage() {
+  const router = useRouter();
+  const { isReady, signIn, user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!isReady || !user) {
+      return;
+    }
+
+    router.replace(user.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization);
+  }, [isReady, router, user]);
+
+  if (!isReady || user) {
+    return <LoadingScreen />;
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const nextUser = await signIn({ email, password, remember });
+      router.push(nextUser.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "Unable to sign in right now.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
-    <main className="flex flex-row min-h-screen w-full font-sans ">
-      <form className=" bg-[#FB7200] flex flex-col w-1/2  p-8 md:p-12 text-white justify-between">
-        <div className=" md:text-2xl  font-sans">Payroll Slips</div>
-        <div>
-          <div className="   font-bold text-5xl  tw-leading-[60px]">
-            <h1 className=" md:text-5xl font-Euclid Circular A mb-4 leading-tight">
-              Simplify your
-              <br />
-              workforce management.
-            </h1>
-          </div>
-          <div className="w-438.22px h-49px t-497px l-48px">
-            <p className="text-sm md:text-lg opacity-90 font-Euclid Circular A">
-              The all-in-one platform for payroll, benefits, and HR
-              <br />
-              compliance built for modern teams.
-            </p>
-          </div>
-        </div>
-
-        <div className="text-xs md:text-sm opacity-80 flex items-center gap-2">
-          <img src="./test.svg" alt="arrow" className="pr" />
-          Trusted by 5,000+ businesses
-        </div>
-      </form>
-
-      <form className="min-h-screen flex place-items-center w-1/2 justify-center">
-        <div className="gap-25px w-440px h-460px t-220.14px l  p-10 flex flex-col items-start">
-          <h1 className="text-[30px] font-bold text-[#1A1C1E] mb-2">
+    <AuthShell
+      sideCopy="The all-in-one platform for payroll, benefits, and HR compliance built for modern teams."
+      sideHeading="Simplify your workforce management."
+    >
+      <div className="space-y-8">
+        <div className="space-y-3">
+          <h2 className="text-4xl font-semibold tracking-tight text-slate-900">
             Sign in to your account
-          </h1>
-          <p className="text-[#6B7280] mb-8">
-            Welcome back! Please enter your details.
+          </h2>
+          <p className="text-base text-slate-500">
+            Best practice for a product-first payroll app is to land returning users on sign in, with sign up as the secondary CTA.
           </p>
+        </div>
 
-          <GeneralInput
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <TextField
+            autoComplete="email"
+            id="login-email"
+            label="Email Address"
+            onChange={(event) => setEmail(event.target.value)}
             placeholder="e.g. name@company.com"
             type="email"
-            labelname="Email Address"
-          ></GeneralInput>
+            value={email}
+          />
 
-          <div className="mt-6 flex justify-between position-relative  ">
-            <PasswordField showResetPassword={true} labelname="Password" />
-          </div>
+          <PasswordField
+            id="login-password"
+            label="Password"
+            labelAction={
+              <Link
+                className="text-sm font-medium text-[var(--brand-600)] transition hover:text-[var(--brand-700)]"
+                href={ROUTES.forgotPassword}
+              >
+                Forgot Password?
+              </Link>
+            }
+            onChange={setPassword}
+            value={password}
+          />
 
-          <div className="mt-4">
-            <RememberMe text=" Remember me for 30 days" />
-          </div>
-          <div className="mt-4">
-            <SignInButton text={" Sign In"} />
-          </div>
-          <div className="flex flex-col gap-4">
-            <SignUpText />
-          </div>
-          <div className="flex  items-center justify-center ">
-            <FooterLabels />
-          </div>
+          <CheckboxField
+            checked={remember}
+            id="remember-session"
+            label="Remember me for 30 days"
+            onChange={setRemember}
+          />
+
+          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+          <Button loading={isSubmitting} type="submit">
+            Sign In
+          </Button>
+        </form>
+
+        <div className="space-y-5 text-center">
+          <p className="text-base text-slate-500">
+            Don&apos;t have an account?{" "}
+            <Link className="font-semibold text-[var(--brand-600)]" href={ROUTES.signup}>
+              Sign Up Now
+            </Link>
+          </p>
+          <FooterLinks />
         </div>
-      </form>
-    </main>
+      </div>
+    </AuthShell>
   );
 }

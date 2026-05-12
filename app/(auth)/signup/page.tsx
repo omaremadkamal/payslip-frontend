@@ -1,97 +1,186 @@
-import SignInButton from "@/components/atoms/button";
-import { GeneralInput } from "@/components/atoms/inputAtom";
-import PasswordField from "@/components/atoms/password";
-import SignUpText from "@/components/atoms/signuptext";
-import EmailField from "@/components/atoms/textatom";
-import RememberMe from "@/components/atoms/rememberme";
-import FooterLabels from "@/components/atoms/footer";
+"use client";
 
-export default function Page() {
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { Button } from "@/components/auth/button";
+import { CheckboxField } from "@/components/auth/checkbox-field";
+import { FooterLinks } from "@/components/auth/footer-links";
+import { LoadingScreen } from "@/components/auth/loading-screen";
+import { PasswordField } from "@/components/auth/password-field";
+import { TextField } from "@/components/auth/text-field";
+import { useAuth } from "@/components/providers/auth-provider";
+import { ROUTES } from "@/lib/routes";
+
+export default function SignupPage() {
+  const router = useRouter();
+  const { isReady, signUp, user } = useAuth();
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!isReady || !user) {
+      return;
+    }
+
+    router.replace(user.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization);
+  }, [isReady, router, user]);
+
+  if (!isReady || user) {
+    return <LoadingScreen />;
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      setError("Password confirmation does not match.");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setError("You need to accept the terms before creating an account.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await signUp({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        password: form.password,
+      });
+      router.push(ROUTES.createOrganization);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "Unable to create your account.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  function updateField(key: keyof typeof form, value: string) {
+    setForm((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
   return (
-    <main className="flex flex-row min-h-screen w-full ">
-      <form className="bg-[#FB7200] flex flex-col w-1/2  p-8 md:p-12 text-white justify-between ">
-        <div className=" md:text-2xl  font-sans">Payroll Slips</div>
-        <div className="font-euclid A  font-bold text-5xl  tw-leading-[60px]">
-          <h1 className=" md:text-5xl font-Euclid Circular A mb-4 leading-tight">
-            100% Payroll
-            <br />
-            Compliance with
-            <br />
-            Egyptian Tax & Social
-            <br />
-            Insurance Laws.
-          </h1>
-          <div className="w-438.22px h-49px t-497px l-48px">
-            <p className="text-sm md:text-lg opacity-90 font-Euclid Circular A">
-              Automate salaries, taxes, and social insurance with guaranteed
-              accuracy. Our dynamic engine updates instantly with the latest
-              Egyptian regulations—no errors, no manual work.
-            </p>
-          </div>
+    <AuthShell
+      sideCopy="Automate salaries, taxes, and social insurance with guaranteed accuracy. Our dynamic engine keeps pace with the latest Egyptian regulations."
+      sideHeading="100% payroll compliance with Egyptian tax and social insurance laws."
+    >
+      <div className="space-y-8">
+        <div className="space-y-3">
+          <h2 className="text-4xl font-semibold tracking-tight text-slate-900">
+            Create an account
+          </h2>
+          <p className="text-base text-slate-500">
+            Start managing your organization&apos;s payroll with a mock onboarding flow that is ready to swap for real API calls.
+          </p>
         </div>
-        <div className="text-xs md:text-sm opacity-80 flex items-center gap-2">
-          <img src="./test.svg" alt="arrow" className="pr" />
-          Trusted by 5,000+ growing businesses.
-        </div>
-      </form>
 
-      <form className="min-h-screen w-1/2 justify-center flex flex-col items-center justify-center ">
-        <div className="w-[448px] h-[550px] gap-[18px] ">
-          <div className=" w-[448px] h-[68px] gap-8px">
-            <h1 className=" w-[448px] h-[36px] leading-[30px] text-[30px] font-bold text-[#1A1C1E] align-middle">
-              Create an account{" "}
-            </h1>
-            <p className="text-[#6B7280]  w-[448px] h-[24px]  font-normal text-[16px] leading-[24px] align-middle">
-              Start managing your organization's payroll today.
-            </p>
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <TextField
+              id="first-name"
+              label="First Name"
+              onChange={(event) => updateField("firstName", event.target.value)}
+              placeholder="e.g. John"
+              type="text"
+              value={form.firstName}
+            />
+            <TextField
+              id="last-name"
+              label="Last Name"
+              onChange={(event) => updateField("lastName", event.target.value)}
+              placeholder="e.g. Doe"
+              type="text"
+              value={form.lastName}
+            />
           </div>
 
-          <div className="w-[448px] h-[420px] gap-[20px]">
-            <div className=" w-[448px] h-[74px] gap-[4px]">
-              <GeneralInput
-                placeholder="e.g.John Doe"
-                type="text"
-                labelname="Admin Full Name"
-              ></GeneralInput>
-            </div>
-            <div className="w-[448px] h-[74px] gap-[4px]">
-              <GeneralInput
-                placeholder="please enter your email"
-                type="email"
-                labelname="Work Email"
-              ></GeneralInput>
-            </div>
-            <div className=" w-[448px] h-[94px] gap-4px">
-              <PasswordField
-                showResetPassword={false}
-                labelname="Password"
-                showError={true}
-              />
-            </div>
-            <div className=" w-[448px] h-[94px] gap-4px">
-              <PasswordField
-                showResetPassword={false}
-                labelname="Confirm Password"
-                showError={true}
-              />
-            </div>
-            <div className="w-[448px] h-[30px] gap-8px">
-              <RememberMe text="I agree to the Terms of Service and Privacy Policy" />
-            </div>
-            <div className="">
-              <SignInButton text={"Create Account"} />
-            </div>
-          </div>
-          <div className="w-[448px] h-[48px] gap-[12px] ">
-            <div className="flex flex-col  ">
-              <SignUpText />
-            </div>
-            <div className="flex justify-center">
-              <FooterLabels />
-            </div>
-          </div>
+          <TextField
+            autoComplete="email"
+            id="work-email"
+            label="Work Email"
+            onChange={(event) => updateField("email", event.target.value)}
+            placeholder="e.g. name@company.com"
+            type="email"
+            value={form.email}
+          />
+
+          <PasswordField
+            hint="Must be at least 8 characters."
+            id="signup-password"
+            label="Password"
+            onChange={(value) => updateField("password", value)}
+            value={form.password}
+          />
+
+          <PasswordField
+            hint="Re-enter your password to continue."
+            id="signup-password-confirm"
+            label="Confirm Password"
+            onChange={(value) => updateField("confirmPassword", value)}
+            value={form.confirmPassword}
+          />
+
+          <CheckboxField
+            checked={acceptedTerms}
+            id="accept-terms"
+            label={
+              <>
+                I agree to the{" "}
+                <Link className="font-medium text-[var(--brand-600)]" href={ROUTES.termsOfService}>
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link className="font-medium text-[var(--brand-600)]" href={ROUTES.privacyPolicy}>
+                  Privacy Policy
+                </Link>
+                .
+              </>
+            }
+            onChange={setAcceptedTerms}
+          />
+
+          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+          <Button loading={isSubmitting} type="submit">
+            Create Account
+          </Button>
+        </form>
+
+        <div className="space-y-5 text-center">
+          <p className="text-base text-slate-500">
+            Already have an account?{" "}
+            <Link className="font-semibold text-[var(--brand-600)]" href={ROUTES.login}>
+              Sign In Now
+            </Link>
+          </p>
+          <FooterLinks />
         </div>
-      </form>
-    </main>
+      </div>
+    </AuthShell>
   );
 }
