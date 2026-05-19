@@ -7,6 +7,10 @@ import { FormCard } from "@/components/auth/form-card";
 import { LoadingScreen } from "@/components/auth/loading-screen";
 import { TextField } from "@/components/auth/text-field";
 import { useAuth } from "@/components/providers/auth-provider";
+// CHANGE [B-11, B-12]: POST the SMTP config to the protected /settings/communication endpoint.
+// WHY: This was previously local-only; the backend needs the values for actual email delivery.
+// IMPACT IF LEFT: Onboarding "completes" but no settings exist server-side.
+import { api, ApiError } from "@/lib/api-client";
 import { ROUTES } from "@/lib/routes";
 
 export default function CommunicationSettingsPage() {
@@ -14,6 +18,7 @@ export default function CommunicationSettingsPage() {
   const { finalizeOnboarding, isReady, onboarding, user } = useAuth();
   const [form, setForm] = useState(onboarding.communication);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!isReady) {
@@ -42,21 +47,48 @@ export default function CommunicationSettingsPage() {
     return <LoadingScreen />;
   }
 
-  function updateField(key: keyof typeof form, value: string) {
+  // CHANGE [B-11]: Generic over value type so smtpPort (number) and smtpSecurity (enum) stay typed.
+  // WHY: TextField always emits string; the caller converts before passing in.
+  // IMPACT IF LEFT: Mixing string into a numeric field reaches the backend as a type mismatch.
+  function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((current) => ({
       ...current,
       [key]: value,
     }));
   }
 
+  // CHANGE [B-11, B-12]: Submit POSTs to /settings/communication, then refreshes /me via finalizeOnboarding.
+  // WHY: This is the last onboarding step; after it succeeds, the server-side onboardingComplete flips to true.
+  // IMPACT IF LEFT: Onboarding never completes server-side and the user stays in a "pending" state.
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
     setIsSubmitting(true);
-    await finalizeOnboarding({
-      ...onboarding,
-      communication: form,
-    });
-    router.push(ROUTES.profileCompleted);
+    try {
+      await api.post("/settings/communication", {
+        senderName: form.senderName,
+        senderTitle: form.senderTitle,
+        senderDepartment: form.senderDepartment,
+        smtpHost: form.smtpHost,
+        smtpPort: form.smtpPort,
+        smtpSecurity: form.smtpSecurity,
+        senderEmail: form.senderEmail,
+        senderPassword: form.senderPassword,
+      });
+      await finalizeOnboarding({
+        ...onboarding,
+        communication: form,
+      });
+      router.push(ROUTES.profileCompleted);
+    } catch (submitError) {
+      if (submitError instanceof ApiError) {
+        setError(submitError.message);
+      } else {
+        setError("Unable to save communication settings right now.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -113,32 +145,56 @@ export default function CommunicationSettingsPage() {
               </div>
 
               <div className="grid gap-6 md:grid-cols-2">
+                {/* CHANGE [B-11]: host → smtpHost. Backend DTO field name. */}
+                {/* WHY: ValidationPipe(whitelist:true) strips the old key so @IsNotEmpty(smtpHost) fails. */}
+                {/* IMPACT IF LEFT: Submit returns 400 "smtpHost should not be empty". */}
                 <TextField
                   id="smtp-host"
                   label="Host"
-                  onChange={(event) => updateField("host", event.target.value)}
+                  onChange={(event) => updateField("smtpHost", event.target.value)}
                   placeholder="e.g. smtp.office365.com"
                   type="text"
-                  value={form.host}
+                  value={form.smtpHost}
                 />
+                {/* CHANGE [B-11]: port (string) → smtpPort (number). Cast on input. */}
+                {/* WHY: Backend DTO declares smtpPort: number with @IsNumber(); string form rejected. */}
+                {/* IMPACT IF LEFT: Submit returns 400 "smtpPort must be a number conforming to the specified constraints". */}
                 <TextField
                   id="smtp-port"
                   label="Port Number"
-                  onChange={(event) => updateField("port", event.target.value)}
+                  onChange={(event) =>
+                    updateField(
+                      "smtpPort",
+                      event.target.value === "" ? 0 : Number(event.target.value),
+                    )
+                  }
                   placeholder="e.g. 587"
-                  type="text"
-                  value={form.port}
+                  type="number"
+                  value={String(form.smtpPort)}
                 />
               </div>
 
-              <TextField
-                id="smtp-security"
-                label="Security"
-                onChange={(event) => updateField("security", event.target.value)}
-                placeholder="TLS"
-                type="text"
-                value={form.security}
-              />
+              {/* CHANGE [B-11]: security (free text) → smtpSecurity (enum TLS | SSL | NONE). */}
+              {/* WHY: Backend DTO uses @IsEnum(SMTP_SECURITY); free text fails enum validation. */}
+              {/* IMPACT IF LEFT: Submit returns 400 "smtpSecurity must be one of the following values: TLS, SSL, NONE". */}
+              <div className="flex w-full flex-col gap-2 text-sm font-medium text-slate-700">
+                <label htmlFor="smtp-security">Security</label>
+                <select
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-base text-slate-900 outline-none transition focus:border-[var(--brand-300)] focus:ring-4 focus:ring-[var(--brand-100)]"
+                  id="smtp-security"
+                  onChange={(event) =>
+                    updateField(
+                      "smtpSecurity",
+                      event.target.value as "TLS" | "SSL" | "NONE",
+                    )
+                  }
+                  value={form.smtpSecurity}
+                >
+                  <option value="TLS">TLS</option>
+                  <option value="SSL">SSL</option>
+                  <option value="NONE">NONE</option>
+                </select>
+              </div>
             </div>
 
             <div className="space-y-5 border-t border-slate-100 pt-8">
@@ -168,6 +224,8 @@ export default function CommunicationSettingsPage() {
                 value={form.senderPassword}
               />
             </div>
+
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
             <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-8 sm:flex-row sm:justify-end">
               <Button onClick={() => router.push(ROUTES.organizationBranding)} type="button" variant="secondary">

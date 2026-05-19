@@ -3,6 +3,10 @@ export const ROUTES = {
   login: "/login",
   signup: "/signup",
   forgotPassword: "/forgot-password",
+  // CHANGE [B-07 / RP-1]: New route entry for the reset-password page.
+  // WHY: The page didn't exist before; the email link from the backend points at this path.
+  // IMPACT IF LEFT: The legacy stub has no target to redirect to and the email link is dead.
+  resetPassword: "/reset-password",
   createOrganization: "/create-organization",
   organizationBranding: "/organization-branding",
   communicationSettings: "/communication-settings",

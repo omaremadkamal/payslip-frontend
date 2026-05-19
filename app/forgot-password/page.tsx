@@ -9,6 +9,10 @@ import { FooterLinks } from "@/components/auth/footer-links";
 import { LoadingScreen } from "@/components/auth/loading-screen";
 import { TextField } from "@/components/auth/text-field";
 import { useAuth } from "@/components/providers/auth-provider";
+// CHANGE [B-06]: Wire the forgot-password form to the real backend.
+// WHY: The previous handler was a setTimeout mock that never actually sent a reset email.
+// IMPACT IF LEFT: Clicking "Send Reset Link" silently does nothing; users never receive an email.
+import { api, ApiError } from "@/lib/api-client";
 import { ROUTES } from "@/lib/routes";
 
 export default function ForgotPasswordPage() {
@@ -17,6 +21,7 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!isReady || !user) {
@@ -30,14 +35,30 @@ export default function ForgotPasswordPage() {
     return <LoadingScreen />;
   }
 
+  // CHANGE [B-06]: POST /auth/forgot-password instead of the setTimeout mock.
+  // WHY: The form needs to trigger a real email; show whatever generic message the server returns.
+  // IMPACT IF LEFT: Users never receive a reset email and the success message is a lie.
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
+    setSuccess("");
     setIsSubmitting(true);
-
-    window.setTimeout(() => {
-      setSuccess(`A mock reset link has been sent to ${email}.`);
+    try {
+      const response = (await api.post("/auth/forgot-password", { email })) as
+        | { message: string }
+        | string;
+      const message =
+        typeof response === "string" ? response : (response?.message ?? "");
+      setSuccess(message || `If an account exists for ${email}, a reset link has been sent.`);
+    } catch (submitError) {
+      if (submitError instanceof ApiError) {
+        setError(submitError.message);
+      } else {
+        setError("Unable to request a reset link right now.");
+      }
+    } finally {
       setIsSubmitting(false);
-    }, 500);
+    }
   }
 
   return (
@@ -65,6 +86,7 @@ export default function ForgotPasswordPage() {
             />
 
             {success ? <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</p> : null}
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
             <Button loading={isSubmitting} type="submit">
               Send Reset Link

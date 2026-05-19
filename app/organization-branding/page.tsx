@@ -6,6 +6,10 @@ import { Button } from "@/components/auth/button";
 import { FormCard } from "@/components/auth/form-card";
 import { LoadingScreen } from "@/components/auth/loading-screen";
 import { useAuth } from "@/components/providers/auth-provider";
+// CHANGE [B-09, B-12]: Use the API client to PATCH branding with multipart/form-data.
+// WHY: Backend uses FileInterceptor('logo') and the protected endpoint needs the Bearer header.
+// IMPACT IF LEFT: Logo never reaches S3 and brand color is never persisted server-side.
+import { api, ApiError } from "@/lib/api-client";
 import { ROUTES } from "@/lib/routes";
 
 export default function OrganizationBrandingPage() {
@@ -13,6 +17,12 @@ export default function OrganizationBrandingPage() {
   const { isReady, onboarding, saveDraft, user } = useAuth();
   const [brandColor, setBrandColor] = useState(onboarding.branding.brandColor);
   const [logoName, setLogoName] = useState(onboarding.branding.logoName);
+  // CHANGE [B-09]: Hold the actual File object alongside its display name.
+  // WHY: The backend expects the binary file, not its filename; previous state only kept the string.
+  // IMPACT IF LEFT: Upload sends nothing meaningful and the logo never lands in S3.
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isReady) {
@@ -43,20 +53,60 @@ export default function OrganizationBrandingPage() {
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const nextFile = event.target.files?.[0];
+    const nextFile = event.target.files?.[0] ?? null;
+    // CHANGE [B-09]: Capture the File itself, not just its name.
+    // WHY: FormData needs the actual binary blob to send multipart/form-data.
+    // IMPACT IF LEFT: Submission would send a string filename and the server would treat it as no file uploaded.
+    setLogoFile(nextFile);
     setLogoName(nextFile?.name ?? "");
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  // CHANGE [B-09, B-10, B-12]: PATCH /organizations/:id with FormData when there's a file or a colour change.
+  // WHY: The endpoint expects multipart/form-data, requires the org id from step 1, and is protected.
+  // IMPACT IF LEFT: No branding ever reaches the server even if the user fills the form.
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    saveDraft({
-      ...onboarding,
-      branding: {
-        brandColor,
-        logoName,
-      },
-    });
-    router.push(ROUTES.communicationSettings);
+    setError("");
+
+    if (!onboarding.organizationId) {
+      setError("Your organisation hasn't been created yet — go back and complete step 1.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const hasFile = logoFile !== null;
+      const hasColourChange = brandColor && brandColor !== onboarding.branding.brandColor;
+      if (hasFile || hasColourChange || brandColor) {
+        const formData = new FormData();
+        if (brandColor) formData.append("brandColor", brandColor);
+        // CHANGE [B-09]: Append the File under the field name `logo`, matching FileInterceptor('logo').
+        // WHY: The interceptor only reads the `logo` form field; any other key is ignored.
+        // IMPACT IF LEFT: Upload silently does nothing.
+        if (logoFile) formData.append("logo", logoFile);
+        // CHANGE [B-09]: Pass FormData directly — do NOT set Content-Type.
+        // WHY: The browser must set multipart boundary; manually setting Content-Type breaks the request.
+        // IMPACT IF LEFT: Server can't parse the multipart body and returns 400.
+        await api.patch(`/organizations/${onboarding.organizationId}`, formData);
+      }
+
+      saveDraft({
+        ...onboarding,
+        branding: {
+          brandColor,
+          logoName,
+        },
+      });
+      router.push(ROUTES.communicationSettings);
+    } catch (submitError) {
+      if (submitError instanceof ApiError) {
+        setError(submitError.message);
+      } else {
+        setError("Unable to save branding right now.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -121,11 +171,13 @@ export default function OrganizationBrandingPage() {
               </div>
             </div>
 
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <Button onClick={() => router.push(ROUTES.createOrganization)} type="button" variant="secondary">
                 Back
               </Button>
-              <Button type="submit">Create Organization</Button>
+              <Button loading={isSubmitting} type="submit">Create Organization</Button>
             </div>
           </form>
         </FormCard>

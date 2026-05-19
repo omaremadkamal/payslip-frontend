@@ -13,6 +13,11 @@ import { TextField } from "@/components/auth/text-field";
 import { useAuth } from "@/components/providers/auth-provider";
 import { ROUTES } from "@/lib/routes";
 
+// CHANGE [B-04]: Mirror the backend's CreateUserDto password regex on the client.
+// WHY: Backend requires upper + lower + digit + special from @.#$!%*?& and 8–64 chars; frontend only checked length.
+// IMPACT IF LEFT: A password like "password1" passes the client check but the server returns 400.
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,64}$/;
+
 export default function SignupPage() {
   const router = useRouter();
   const { isReady, signUp, user } = useAuth();
@@ -43,13 +48,13 @@ export default function SignupPage() {
     event.preventDefault();
     setError("");
 
-    if (form.password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setError("Password confirmation does not match.");
+    // CHANGE [B-04]: Validate against the backend regex, not just length.
+    // WHY: Backend rejects passwords without an uppercase, lowercase, digit, and special character from @.#$!%*?&.
+    // IMPACT IF LEFT: User sees a generic 400 from the server instead of an inline form error.
+    if (!PASSWORD_REGEX.test(form.password)) {
+      setError(
+        "Password must be 8–64 characters and include an uppercase letter, lowercase letter, number, and special character (@.#$!%*?&).",
+      );
       return;
     }
 

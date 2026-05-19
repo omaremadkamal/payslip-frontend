@@ -89,7 +89,10 @@ export default function DashboardPage() {
               <div>
                 <dt className="text-sm text-slate-500">Commercial Reg. Number</dt>
                 <dd className="mt-1 text-base font-semibold text-slate-900">
-                  {onboarding.companyDetails.commercialRegistrationNumber}
+                  {/* CHANGE [B-08]: Read renamed field commercialRegNumber. */}
+                  {/* WHY: Type renamed in lockstep with create-organization page; old name no longer exists. */}
+                  {/* IMPACT IF LEFT: TypeScript compile error. */}
+                  {onboarding.companyDetails.commercialRegNumber}
                 </dd>
               </div>
               <div>
@@ -121,13 +124,19 @@ export default function DashboardPage() {
               <div>
                 <dt className="text-sm text-slate-500">SMTP Host</dt>
                 <dd className="mt-1 text-base font-semibold text-slate-900">
-                  {onboarding.communication.host}:{onboarding.communication.port}
+                  {/* CHANGE [B-11]: Read renamed fields smtpHost / smtpPort. */}
+                  {/* WHY: Types renamed in lockstep with communication-settings page. */}
+                  {/* IMPACT IF LEFT: TypeScript compile error. */}
+                  {onboarding.communication.smtpHost}:{onboarding.communication.smtpPort}
                 </dd>
               </div>
               <div>
                 <dt className="text-sm text-slate-500">Security</dt>
                 <dd className="mt-1 text-base font-semibold text-slate-900">
-                  {onboarding.communication.security}
+                  {/* CHANGE [B-11]: Read renamed field smtpSecurity. */}
+                  {/* WHY: Type renamed in lockstep with communication-settings page. */}
+                  {/* IMPACT IF LEFT: TypeScript compile error. */}
+                  {onboarding.communication.smtpSecurity}
                 </dd>
               </div>
             </dl>
