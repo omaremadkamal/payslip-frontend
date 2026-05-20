@@ -12,6 +12,7 @@ import { PasswordField } from "@/components/auth/password-field";
 import { TextField } from "@/components/auth/text-field";
 import { useAuth } from "@/components/providers/auth-provider";
 import { ROUTES } from "@/lib/routes";
+import GoogleSignInButton from "@/components/atoms/button/button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,12 +28,8 @@ export default function LoginPage() {
       return;
     }
 
-    router.replace(user.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization);
+    router.replace(user.onboardingComplete ? ROUTES.dashboard : ROUTES.login);
   }, [isReady, router, user]);
-
-  if (!isReady || user) {
-    return <LoadingScreen />;
-  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,10 +38,16 @@ export default function LoginPage() {
 
     try {
       const nextUser = await signIn({ email, password, remember });
-      router.push(nextUser.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization);
+      router.push(
+        nextUser.onboardingComplete
+          ? ROUTES.dashboard
+          : ROUTES.createOrganization,
+      );
     } catch (submitError) {
       setError(
-        submitError instanceof Error ? submitError.message : "Unable to sign in right now.",
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to sign in right now.",
       );
     } finally {
       setIsSubmitting(false);
@@ -62,7 +65,7 @@ export default function LoginPage() {
             Sign in to your account
           </h2>
           <p className="text-base text-slate-500">
-            Best practice for a product-first payroll app is to land returning users on sign in, with sign up as the secondary CTA.
+            Welcome back! Please enter your details.{" "}
           </p>
         </div>
 
@@ -104,12 +107,23 @@ export default function LoginPage() {
           <Button loading={isSubmitting} type="submit">
             Sign In
           </Button>
+
+          <div className="flex items-center w-full my-5">
+            <div className="flex-grow border-t border-slate-300"></div>
+            <h6 className="mx-4 text-base text-slate-500">OR</h6>
+            <div className="flex-grow border-t border-slate-300"></div>
+          </div>
+
+          <GoogleSignInButton onClick={() => console.log("clicked")} />
         </form>
 
         <div className="space-y-5 text-center">
           <p className="text-base text-slate-500">
-            Don&apos;t have an account?{" "}
-            <Link className="font-semibold text-[var(--brand-600)]" href={ROUTES.signup}>
+            Don&apos;dont have an account?{" "}
+            <Link
+              className="font-semibold text-[var(--brand-600)]"
+              href={ROUTES.signup}
+            >
               Sign Up Now
             </Link>
           </p>

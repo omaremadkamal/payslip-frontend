@@ -12,9 +12,8 @@ export function AuthShell({ sideHeading, sideCopy, children }: AuthShellProps) {
       <aside className="relative overflow-hidden bg-[var(--brand-500)] px-6 py-8 text-white sm:px-10 sm:py-10 lg:flex lg:min-h-screen lg:flex-col lg:justify-between lg:px-12 lg:py-14">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_32%)]" />
         <div className="relative flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">Payroll Slips</span>
-          <span className="rounded-full border border-white/25 px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-white/80">
-            Payroll OS
+          <span className="text-lg font-semibold tracking-tight">
+            Payroll Slips
           </span>
         </div>
 
@@ -43,4 +42,3 @@ export function AuthShell({ sideHeading, sideCopy, children }: AuthShellProps) {
     </main>
   );
 }
-

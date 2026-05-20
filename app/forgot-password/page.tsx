@@ -23,7 +23,11 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    router.replace(user.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization);
+    router.replace(
+      user.onboardingComplete
+        ? ROUTES.forgotPassword
+        : ROUTES.createOrganization,
+    );
   }, [isReady, router, user]);
 
   if (!isReady || user) {
@@ -42,15 +46,44 @@ export default function ForgotPasswordPage() {
 
   return (
     <main className="min-h-screen bg-[var(--app-surface)] px-5 py-10 sm:px-8">
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-6">
-          <Link className="text-lg font-semibold tracking-tight text-slate-900" href={ROUTES.login}>
-            Payroll Slips
-          </Link>
+      <div className="mb-6 ml-[60px]">
+        <Link
+          className="text-lg font-semibold tracking-tight text-slate-900"
+          href={ROUTES.login}
+        >
+          Payroll Slips
+        </Link>
+      </div>
+      <div className="mx-auto max-w-[480px]">
+        <div
+          className="test"
+          style={{
+            borderRadius: "28px 28px 0 0",
+
+            height: "128px",
+            width: "480px",
+            background: "#D85B001A",
+            justifyContent: "center",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src="./forgetPassword.svg"
+            alt="icon"
+            style={{
+              background: "white",
+              borderRadius: " 50%",
+              width: " 80px",
+              height: "80px",
+            }}
+          />
         </div>
 
         <FormCard
-          description="Enter the email address associated with your account and we’ll simulate the reset email flow."
+          description="No worries! Enter the email address associated with
+          your account, and we'll send you a link to reset
+          your password."
           title="Forgot Password?"
         >
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -64,7 +97,11 @@ export default function ForgotPasswordPage() {
               value={email}
             />
 
-            {success ? <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</p> : null}
+            {success ? (
+              <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {success}
+              </p>
+            ) : null}
 
             <Button loading={isSubmitting} type="submit">
               Send Reset Link
