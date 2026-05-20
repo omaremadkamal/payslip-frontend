@@ -32,7 +32,9 @@ export default function SignupPage() {
       return;
     }
 
-    router.replace(user.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization);
+    router.replace(
+      user.onboardingComplete ? ROUTES.dashboard : ROUTES.createOrganization,
+    );
   }, [isReady, router, user]);
 
   if (!isReady || user) {
@@ -70,7 +72,9 @@ export default function SignupPage() {
       router.push(ROUTES.createOrganization);
     } catch (submitError) {
       setError(
-        submitError instanceof Error ? submitError.message : "Unable to create your account.",
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to create your account.",
       );
     } finally {
       setIsSubmitting(false);
@@ -95,7 +99,7 @@ export default function SignupPage() {
             Create an account
           </h2>
           <p className="text-base text-slate-500">
-            Start managing your organization&apos;s payroll with a mock onboarding flow that is ready to swap for real API calls.
+            Start managing your organization's payroll today.
           </p>
         </div>
 
@@ -151,11 +155,17 @@ export default function SignupPage() {
             label={
               <>
                 I agree to the{" "}
-                <Link className="font-medium text-[var(--brand-600)]" href={ROUTES.termsOfService}>
+                <Link
+                  className="font-medium text-[var(--brand-600)]"
+                  href={ROUTES.termsOfService}
+                >
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link className="font-medium text-[var(--brand-600)]" href={ROUTES.privacyPolicy}>
+                <Link
+                  className="font-medium text-[var(--brand-600)]"
+                  href={ROUTES.privacyPolicy}
+                >
                   Privacy Policy
                 </Link>
                 .
@@ -174,7 +184,10 @@ export default function SignupPage() {
         <div className="space-y-5 text-center">
           <p className="text-base text-slate-500">
             Already have an account?{" "}
-            <Link className="font-semibold text-[var(--brand-600)]" href={ROUTES.login}>
+            <Link
+              className="font-semibold text-[var(--brand-600)]"
+              href={ROUTES.login}
+            >
               Sign In Now
             </Link>
           </p>
