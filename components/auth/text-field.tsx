@@ -34,7 +34,9 @@ export function TextField({
         ) : null}
       </div>
       {error ? <span className="text-sm text-red-600">{error}</span> : null}
-      {!error && hint ? <span className="text-sm text-slate-500">{hint}</span> : null}
+      {!error && hint ? (
+        <span className="text-sm text-slate-500">{hint}</span>
+      ) : null}
     </div>
   );
 }
